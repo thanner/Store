@@ -15,7 +15,7 @@ Customers e Products jamais são apagados do banco (ficam com o status de "inati
 ## Tecnologias utilizadas
 - Java
 - Maven
-- Spring Framework (Spring boot, Spring Data JPA, Spring Security, Spring HATEOAS)
+- Spring Framework (Spring boot, Spring boot actuator, Spring Data JPA, Spring Security, Spring HATEOAS)
 - Docker
 - Swagger
 - Lombok
