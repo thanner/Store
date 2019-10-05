@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface OrderService {
 
-    void save(Integer customerId, Order order);
+    Order save(Integer customerId, Order order);
 
     Optional<Order> findOrder(Integer customerId, Integer orderId);
 

@@ -33,11 +33,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void save(Integer customerId, Order order) {
+    public Order save(Integer customerId, Order order) {
         Optional<Customer> optionalCustomer = customerService.findCustomer(customerId);
         if (optionalCustomer.isPresent()) {
             order.setCustomer(optionalCustomer.get());
-            orderRepository.save(order);
+            return orderRepository.save(order);
         } else {
             throw new EntityNotFoundException(ExceptionMessage.CustomerNotFound);
         }

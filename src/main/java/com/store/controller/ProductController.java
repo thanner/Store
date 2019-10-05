@@ -11,6 +11,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -28,12 +29,12 @@ public class ProductController implements ProductApi {
 
     @Override
     public ResponseEntity<ProductResource> addProduct(Product product) {
-        productService.save(product);
-        return new ResponseEntity<>(new ProductResource(product), HttpStatus.CREATED);
+        Product persistedProduct = productService.save(product);
+        return new ResponseEntity<>(new ProductResource(persistedProduct), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<ProductResource> getProductById(Integer productId) {
+    public ResponseEntity<ProductResource> getProductById(@PathVariable Integer productId) {
         Optional<Product> productOptional = productService.findProduct(productId);
         return getResponseEntity(productOptional, HttpStatus.OK);
     }
@@ -46,15 +47,15 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<ProductResource> updateProductById(Integer id, Product product) {
-        Optional<Product> productOptional = productService.updateById(id, product);
+    public ResponseEntity<ProductResource> updateProductById(Integer productId, Product product) {
+        Optional<Product> productOptional = productService.updateById(productId, product);
         return getResponseEntity(productOptional, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Void> deleteProductById(Integer productId) {
         productService.deleteById(productId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     private ResponseEntity<ProductResource> getResponseEntity(Optional<Product> productOptional, HttpStatus httpStatus) {

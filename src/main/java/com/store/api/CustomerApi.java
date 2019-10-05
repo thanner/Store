@@ -34,8 +34,8 @@ public interface CustomerApi {
             @ApiResponse(code = 200, message = "successful operation", response = Customer.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @GetMapping(value = "/{customer-id}")
-    ResponseEntity<CustomerResource> getCustomerById(@ApiParam(value = "Customer id") @Valid @PathVariable(value = "customer-id") Integer customerId);
+    @GetMapping(value = "/{customerId}")
+    ResponseEntity<CustomerResource> getCustomerById(@ApiParam(value = "Customer id") @Valid @PathVariable Integer customerId);
 
     @ApiOperation(value = "Get customers", nickname = "getCustomer", response = Customer.class, responseContainer = "List",
             notes = "Retrieves a collection of users by taking into account customer features. Can be done pagination (quantity of items returned) and ordering",
@@ -59,8 +59,8 @@ public interface CustomerApi {
             @ApiResponse(code = 404, message = "Customer not found"),
             @ApiResponse(code = 405, message = "Validation exception")
     })
-    @PutMapping(value = "/{customer-id}")
-    ResponseEntity<CustomerResource> updateCustomerById(@ApiParam(value = "Customer id that will be updated", required = true) @Valid @PathVariable(value = "customer-id") Integer customerId,
+    @PutMapping(value = "/{customerId}")
+    ResponseEntity<CustomerResource> updateCustomerById(@ApiParam(value = "Customer id that will be updated", required = true) @Valid @PathVariable Integer customerId,
                                                         @ApiParam(value = "Data that will be updated in customer", required = true) @Valid Customer customer);
 
 
@@ -70,7 +70,7 @@ public interface CustomerApi {
             @ApiResponse(code = 401, message = "Access token is missing or invalid"),
             @ApiResponse(code = 404, message = "Customer not found")
     })
-    @DeleteMapping(value = "/{customer-id}")
-    ResponseEntity<Void> deleteCustomerById(@ApiParam(value = "Customer id that will be deleted", required = true) @Valid @PathVariable(value = "customer-id") Integer customerId);
+    @DeleteMapping(value = "/{customerId}")
+    ResponseEntity<Void> deleteCustomerById(@ApiParam(value = "Customer id that will be deleted", required = true) @Valid @PathVariable Integer customerId);
 
 }

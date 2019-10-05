@@ -11,6 +11,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -28,12 +29,12 @@ public class CustomerController implements CustomerApi {
 
     @Override
     public ResponseEntity<CustomerResource> addCustomer(Customer customer) {
-        customerService.createNewCustomer(customer);
-        return new ResponseEntity<>(new CustomerResource(customer), HttpStatus.CREATED);
+        Customer persistedCustomer = customerService.createNewCustomer(customer);
+        return new ResponseEntity<>(new CustomerResource(persistedCustomer), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<CustomerResource> getCustomerById(Integer customerId) {
+    public ResponseEntity<CustomerResource> getCustomerById(@PathVariable Integer customerId) {
         Optional<Customer> customerOptional = customerService.findCustomer(customerId);
         return getResponseEntity(customerOptional, HttpStatus.OK);
     }
@@ -54,7 +55,7 @@ public class CustomerController implements CustomerApi {
     @Override
     public ResponseEntity<Void> deleteCustomerById(Integer customerId) {
         customerService.deleteById(customerId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     private ResponseEntity<CustomerResource> getResponseEntity(Optional<Customer> customerOptional, HttpStatus httpStatus) {

@@ -28,9 +28,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void createNewCustomer(Customer customer) {
+    public Customer createNewCustomer(Customer customer) {
         customer.setAccountStatus(AccountStatus.ACTIVE);
-        customerRepository.save(customer);
+        return customerRepository.save(customer);
     }
 
     @Override

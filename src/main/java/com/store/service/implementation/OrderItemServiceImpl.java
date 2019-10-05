@@ -38,7 +38,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public void save(Integer customerId, Integer orderId, OrderItem orderItem) {
+    public OrderItem save(Integer customerId, Integer orderId, OrderItem orderItem) {
         Optional<Order> optionalOrder = orderService.findOrder(customerId, orderId);
         Optional<Product> optionalProduct = orderItem.getProduct() != null ? productService.findProduct(orderItem.getProduct().getProductId()) : Optional.empty();
         if (optionalOrder.isEmpty()) {
@@ -48,7 +48,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         } else {
             orderItem.setOrder(optionalOrder.get());
             orderItem.setProduct(optionalProduct.get());
-            orderItemRepository.save(orderItem);
+            return orderItemRepository.save(orderItem);
         }
     }
 

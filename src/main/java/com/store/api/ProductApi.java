@@ -34,8 +34,8 @@ public interface ProductApi {
             @ApiResponse(code = 200, message = "successful operation", response = Product.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @GetMapping(value = "/{product-id}")
-    ResponseEntity<ProductResource> getProductById(@PathVariable(value = "product-id") Integer productId);
+    @GetMapping(value = "/{productId}")
+    ResponseEntity<ProductResource> getProductById(@PathVariable Integer productId);
 
     @ApiOperation(value = "Get products", nickname = "getProduct", response = Product.class, responseContainer = "List",
             notes = "Retrieves a collection of users by taking into account product features. Can be done pagination (quantity of items returned) and ordering",
@@ -59,8 +59,8 @@ public interface ProductApi {
             @ApiResponse(code = 404, message = "Customer not found"),
             @ApiResponse(code = 405, message = "Validation exception")
     })
-    @PutMapping(value = "/{product-id}")
-    ResponseEntity<ProductResource> updateProductById(@ApiParam(value = "Product id that will be updated", required = true) @Valid @PathVariable(value = "product-id") Integer productId,
+    @PutMapping(value = "/{productId}")
+    ResponseEntity<ProductResource> updateProductById(@ApiParam(value = "Product id that will be updated", required = true) @Valid @PathVariable Integer productId,
                                                       @ApiParam(value = "Data that will be updated in product", required = true) @Valid Product product);
 
 
@@ -70,7 +70,7 @@ public interface ProductApi {
             @ApiResponse(code = 401, message = "Access token is missing or invalid"),
             @ApiResponse(code = 404, message = "Customer not found")
     })
-    @DeleteMapping(value = "/{product-id}")
-    ResponseEntity<Void> deleteProductById(@ApiParam(value = "Product id that will be deleted", required = true) @Valid @PathVariable(value = "product-id") Integer productId);
+    @DeleteMapping(value = "/{productId}")
+    ResponseEntity<Void> deleteProductById(@ApiParam(value = "Product id that will be deleted", required = true) @Valid @PathVariable Integer productId);
 
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface CustomerService {
 
-    void createNewCustomer(Customer customer);
+    Customer createNewCustomer(Customer customer);
 
     Optional<Customer> findCustomer(Integer customerId);
 

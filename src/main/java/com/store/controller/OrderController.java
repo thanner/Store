@@ -12,6 +12,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -29,18 +30,18 @@ public class OrderController implements OrderApi {
 
     @Override
     public ResponseEntity<OrderResource> addOrder(Integer customerId, Order order) {
-        orderService.save(customerId, order);
-        return new ResponseEntity<>(new OrderResource(order), HttpStatus.CREATED);
+        Order persistedOrder = orderService.save(customerId, order);
+        return new ResponseEntity<>(new OrderResource(persistedOrder), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<OrderResource> getOrderById(Integer customerId, Integer orderId) {
+    public ResponseEntity<OrderResource> getOrderById(@PathVariable Integer customerId, @PathVariable Integer orderId) {
         Optional<Order> orderOptional = orderService.findOrder(customerId, orderId);
         return getResponseEntity(orderOptional, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<PagedResources<Order>> getOrder(Integer customerId, Integer orderId, Customer customer, BigDecimal value, Pageable pageable, PagedResourcesAssembler assembler) {
+    public ResponseEntity<PagedResources<Order>> getOrder(@PathVariable Integer customerId, Integer orderId, Customer customer, BigDecimal value, Pageable pageable, PagedResourcesAssembler assembler) {
         Order orderExample = Order.builder().orderId(orderId).customer(customer).value(value).build();
         Page<Order> orderPage = orderService.findOrderByExample(customerId, orderExample, pageable);
         return new ResponseEntity<PagedResources<Order>>(assembler.toResource(orderPage), HttpStatus.OK);
@@ -55,7 +56,7 @@ public class OrderController implements OrderApi {
     @Override
     public ResponseEntity<Void> deleteOrderById(Integer customerId, Integer orderId) {
         orderService.deleteById(customerId, orderId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     private ResponseEntity<OrderResource> getResponseEntity(Optional<Order> orderOptional, HttpStatus httpStatus) {
