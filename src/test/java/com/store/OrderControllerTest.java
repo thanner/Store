@@ -2,6 +2,7 @@ package com.store;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.controller.OrderController;
+import com.store.domain.Customer;
 import com.store.domain.Order;
 import com.store.service.interfaces.OrderService;
 import org.apache.commons.lang3.StringUtils;
@@ -49,12 +50,13 @@ public class OrderControllerTest extends AbstractTest {
     }
 
     private void setupOrder() {
-        order = Order.builder().orderId(orderId).value(new BigDecimal(1.20)).build();
+        order = Order.builder().orderId(orderId).value(new BigDecimal(1.20)).customer(Customer.builder().customerId(customerId).build()).build();
     }
 
     @Test
     public void getOrderByIdShouldReturnOrder() throws Exception {
         given(orderService.findOrder(eq(customerId), eq(orderId))).willReturn(Optional.of(order));
+        String path = orderPath + "/" + orderId;
         final ResultActions result = mockMvc.perform(get(orderPath + "/" + orderId));
         result.andExpect(status().isOk());
         verifyJsonOrderById(result);
@@ -102,14 +104,13 @@ public class OrderControllerTest extends AbstractTest {
     private void verifyJsonOrderById(final ResultActions result) throws Exception {
         verifyJsonOrder(result, "order");
         result
-                .andExpect(jsonPath("_links.orders.href", is(orderPath)))
-                .andExpect(jsonPath("_links.orderOrders.href", is(orderPath + "/" + orderId + "/orders")))
+                .andExpect(jsonPath("_links.customerOrderItems.href", is(orderPath + "/" + orderId + "/order-items")))
                 .andExpect(jsonPath("_links.self.href", is(orderPath + "/" + orderId)));
     }
 
     private void verifyJsonOrderPaged(final ResultActions result) throws Exception {
         verifyJsonOrder(result, "_embedded.orderList[0]");
-        result.andExpect(jsonPath("_links.self.href", is(orderPath)));
+        result.andExpect(jsonPath("_links.self.href", is(orderPath + "?id=" + orderId)));
     }
 
     private void verifyJsonOrder(final ResultActions result, String orderPath) throws Exception {
