@@ -49,7 +49,7 @@ public interface OrderApi {
     })
     @GetMapping
     ResponseEntity<PagedResources<Order>> getOrder(@ApiParam(value = "Customer id") @Valid @PathVariable Integer customerId,
-                                                   @ApiParam(value = "Order id") @Valid @RequestParam(value = "id", required = false) Integer orderId,
+                                                   @ApiParam(value = "Order id") @Valid @PathVariable @RequestParam(value = "id", required = false) Integer orderId,
                                                    @ApiParam(value = "Customer") @Valid @RequestParam(value = "customer", required = false) Customer customer,
                                                    @ApiParam(value = "Order value") @Valid @RequestParam(value = "value", required = false) BigDecimal value,
                                                    @PageableDefault Pageable pageable,

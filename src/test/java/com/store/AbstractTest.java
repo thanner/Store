@@ -18,6 +18,7 @@ public class AbstractTest {
     protected static final String basePath = "http://localhost";
     protected static final String customerPath = basePath + "/customers";
     protected static final String orderPath = customerPath + "/" + customerId + "/orders";
+    protected static final String orderItemPath = orderPath + "/" + orderId + "/order-items";
     protected static final String productPath = basePath + "/products";
 
 }

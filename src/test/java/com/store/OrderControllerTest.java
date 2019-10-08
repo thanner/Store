@@ -56,7 +56,6 @@ public class OrderControllerTest extends AbstractTest {
     @Test
     public void getOrderByIdShouldReturnOrder() throws Exception {
         given(orderService.findOrder(eq(customerId), eq(orderId))).willReturn(Optional.of(order));
-        String path = orderPath + "/" + orderId;
         final ResultActions result = mockMvc.perform(get(orderPath + "/" + orderId));
         result.andExpect(status().isOk());
         verifyJsonOrderById(result);
@@ -68,7 +67,7 @@ public class OrderControllerTest extends AbstractTest {
         orderList.add(order);
         Page<Order> pageOrder = new PageImpl<>(orderList);
         given(orderService.findOrderByExample(eq(customerId), any(Order.class), any(Pageable.class))).willReturn(pageOrder);
-        final ResultActions result = mockMvc.perform(get(orderPath + "?id=" + order.getOrderId()));
+        final ResultActions result = mockMvc.perform(get(orderPath + "?id=" + orderId));
         result.andExpect(status().isOk());
         verifyJsonOrderPaged(result);
     }
