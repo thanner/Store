@@ -27,7 +27,7 @@ public interface OrderApi {
     })
     @PostMapping
     ResponseEntity<OrderResource> addOrder(@ApiParam(value = "Customer id of the order", required = true) @Valid @PathVariable Integer customerId,
-                                           @ApiParam(value = "Order that will be added", required = true) @Valid Order order);
+                                           @ApiParam(value = "Order that will be added", required = true) @Valid @RequestBody Order order);
 
     @ApiOperation(value = "Get order by id", nickname = "getOrderById", response = Order.class,
             notes = "Retrieves a order by id",
@@ -66,7 +66,7 @@ public interface OrderApi {
     @PutMapping(value = "/{orderId}")
     ResponseEntity<OrderResource> updateOrderById(@ApiParam(value = "Customer id of the order", required = true) @Valid @PathVariable Integer customerId,
                                                   @ApiParam(value = "Order id that will be updated", required = true) @Valid @PathVariable Integer orderId,
-                                                  @ApiParam(value = "Data that will be updated in order", required = true) @Valid Order order);
+                                                  @ApiParam(value = "Data that will be updated in order", required = true) @Valid @RequestBody Order order);
 
 
     @ApiOperation(value = "Delete order", nickname = "deleteOrderById", authorizations = {@Authorization(value = "bearerAuth")}, tags = {"order",})

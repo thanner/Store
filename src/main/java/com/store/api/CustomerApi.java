@@ -25,7 +25,7 @@ public interface CustomerApi {
             @ApiResponse(code = 405, message = "Invalid input")
     })
     @PostMapping
-    ResponseEntity<CustomerResource> addCustomer(@ApiParam(value = "Customer that will be added", required = true) @Valid Customer customer);
+    ResponseEntity<CustomerResource> addCustomer(@ApiParam(value = "Customer that will be added", required = true) @Valid @RequestBody Customer customer);
 
     @ApiOperation(value = "Get customer by id", nickname = "getCustomerById", response = Customer.class,
             notes = "Retrieves a customer by id",
@@ -61,7 +61,7 @@ public interface CustomerApi {
     })
     @PutMapping(value = "/{customerId}")
     ResponseEntity<CustomerResource> updateCustomerById(@ApiParam(value = "Customer id that will be updated", required = true) @Valid @PathVariable Integer customerId,
-                                                        @ApiParam(value = "Data that will be updated in customer", required = true) @Valid Customer customer);
+                                                        @ApiParam(value = "Data that will be updated in customer", required = true) @Valid @RequestBody Customer customer);
 
 
     @ApiOperation(value = "Delete customer", nickname = "deleteCustomerById", authorizations = {@Authorization(value = "bearerAuth")}, tags = {"customer",})

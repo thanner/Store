@@ -1,27 +1,21 @@
-package com.store;
+package com.store.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.store.controller.ProductController;
+import com.store.AbstractTest;
 import com.store.domain.Product;
-import com.store.domain.ProductStatus;
-import com.store.service.interfaces.ProductService;
+import com.store.service.ProductService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,12 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = ProductController.class, secure = false)
 public class ProductControllerTest extends AbstractTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
     @MockBean
     private ProductService productService;
 
@@ -46,16 +34,13 @@ public class ProductControllerTest extends AbstractTest {
 
     @Before
     public void setup() {
-        setupProduct();
-    }
-
-    private void setupProduct() {
-        product = Product.builder().productId(productId).name("name").suggestedPrice(new BigDecimal(1.20)).productStatus(ProductStatus.ACTIVE).build();
+        super.setup();
+        product = setupProduct();
     }
 
     @Test
     public void getProductByIdShouldReturnProduct() throws Exception {
-        given(productService.findProduct(any(Integer.class))).willReturn(Optional.of(product));
+        given(productService.findProduct(any(Integer.class))).willReturn(product);
         final ResultActions result = mockMvc.perform(get(productPath + "/" + productId));
         result.andExpect(status().isOk());
         verifyJsonProductById(result);
@@ -67,7 +52,7 @@ public class ProductControllerTest extends AbstractTest {
         productList.add(product);
         Page<Product> pageProduct = new PageImpl<>(productList);
         given(productService.findProductByExample(any(Product.class), any(Pageable.class))).willReturn(pageProduct);
-        final ResultActions result = mockMvc.perform(get(productPath + "?id=" + product.getProductId() + "&name=" + product.getName()));
+        final ResultActions result = mockMvc.perform(get(productPath + "?id=" + product.getId() + "&name=" + product.getName()));
         result.andExpect(status().isOk());
         verifyJsonProductPaged(result);
     }
@@ -85,7 +70,7 @@ public class ProductControllerTest extends AbstractTest {
 
     @Test
     public void putReturnsCorrectResponse() throws Exception {
-        given(productService.updateById(eq(productId), any(Product.class))).willReturn(Optional.of(product));
+        given(productService.updateById(eq(productId), any(Product.class))).willReturn(product);
         final ResultActions result = mockMvc.perform(put(productPath + "/" + productId)
                 .content(mapper.writeValueAsBytes(product))
                 .contentType(MediaType.APPLICATION_JSON_UTF8));
@@ -114,9 +99,9 @@ public class ProductControllerTest extends AbstractTest {
 
     private void verifyJsonProduct(final ResultActions result, String productPath) throws Exception {
         result
-                .andExpect(jsonPath(productPath + ".id", is(product.getProductId())))
+                .andExpect(jsonPath(productPath + ".id", is(product.getId())))
                 .andExpect(jsonPath(productPath + ".name", is(product.getName())))
-                .andExpect(jsonPath(productPath + ".suggestedPrice", is(product.getSuggestedPrice())))
+                .andExpect(jsonPath(productPath + ".suggestedPrice", is(product.getSuggestedPrice().doubleValue())))
                 .andExpect(jsonPath(productPath + ".productStatus", is(product.getProductStatus().toString())));
     }
 

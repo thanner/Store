@@ -1,10 +1,27 @@
 package com.store;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.store.domain.Customer;
+import com.store.domain.Order;
+import com.store.domain.OrderItem;
+import com.store.domain.Product;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+@Ignore
 @RunWith(SpringRunner.class)
 public class AbstractTest {
 
@@ -20,5 +37,43 @@ public class AbstractTest {
     protected static final String orderPath = customerPath + "/" + customerId + "/orders";
     protected static final String orderItemPath = orderPath + "/" + orderId + "/order-items";
     protected static final String productPath = basePath + "/products";
+
+    @Autowired
+    protected MockMvc mockMvc;
+
+    @Autowired
+    protected ObjectMapper mapper;
+
+    private ApplicationContext applicationContext;
+
+    @Before
+    public void setup() {
+        applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+    }
+
+    protected Customer setupCustomer() {
+        return (Customer) applicationContext.getBean("customer");
+    }
+
+    protected Order setupOrder() {
+        return (Order) applicationContext.getBean("order");
+    }
+
+    protected OrderItem setupOrderItem() {
+        return (OrderItem) applicationContext.getBean("orderItem");
+    }
+
+    protected Product setupProduct() {
+        return (Product) applicationContext.getBean("product");
+    }
+
+    protected <T> String toJson(T t) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(t);
+    }
+
+    protected ResultActions postResource(String path, Object resource) throws Exception {
+        return mockMvc.perform(post(path).content(toJson(resource)).contentType(MediaType.APPLICATION_JSON_UTF8));
+    }
 
 }

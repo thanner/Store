@@ -25,7 +25,7 @@ public interface OrderItemApi {
     @PostMapping
     ResponseEntity<OrderItemResource> addOrderItem(@ApiParam(value = "Customer id of the order item", required = true) @Valid @PathVariable Integer customerId,
                                                    @ApiParam(value = "Order id of the order item", required = true) @Valid @PathVariable Integer orderId,
-                                                   @ApiParam(value = "Order item that will be added", required = true) @Valid OrderItem orderItem);
+                                                   @ApiParam(value = "Order item that will be added", required = true) @Valid @RequestBody OrderItem orderItem);
 
     @ApiOperation(value = "Get order item by id", nickname = "getOrderItemById", response = OrderItem.class,
             notes = "Retrieves a order item by id",
@@ -67,7 +67,7 @@ public interface OrderItemApi {
     ResponseEntity<OrderItemResource> updateOrderItemById(@ApiParam(value = "Customer id of the order item", required = true) @Valid @PathVariable Integer customerId,
                                                           @ApiParam(value = "Order id of the order item", required = true) @Valid @PathVariable Integer orderId,
                                                           @ApiParam(value = "Order item id that will be updated", required = true) @Valid @PathVariable Integer orderItemId,
-                                                          @ApiParam(value = "Data that will be updated in order item", required = true) @Valid OrderItem orderItem);
+                                                          @ApiParam(value = "Data that will be updated in order item", required = true) @Valid @RequestBody OrderItem orderItem);
 
 
     @ApiOperation(value = "Delete order item", nickname = "deleteOrderItemById", authorizations = {@Authorization(value = "bearerAuth")}, tags = {"orderItem",})

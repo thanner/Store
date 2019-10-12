@@ -1,27 +1,21 @@
-package com.store;
+package com.store.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.store.controller.OrderController;
-import com.store.domain.Customer;
+import com.store.AbstractTest;
 import com.store.domain.Order;
-import com.store.service.interfaces.OrderService;
+import com.store.service.OrderService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,12 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = OrderController.class, secure = false)
 public class OrderControllerTest extends AbstractTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
     @MockBean
     private OrderService orderService;
 
@@ -46,16 +34,13 @@ public class OrderControllerTest extends AbstractTest {
 
     @Before
     public void setup() {
-        setupOrder();
-    }
-
-    private void setupOrder() {
-        order = Order.builder().orderId(orderId).value(new BigDecimal(1.20)).customer(Customer.builder().customerId(customerId).build()).build();
+        super.setup();
+        order = setupOrder();
     }
 
     @Test
     public void getOrderByIdShouldReturnOrder() throws Exception {
-        given(orderService.findOrder(eq(customerId), eq(orderId))).willReturn(Optional.of(order));
+        given(orderService.findOrder(eq(customerId), eq(orderId))).willReturn(order);
         final ResultActions result = mockMvc.perform(get(orderPath + "/" + orderId));
         result.andExpect(status().isOk());
         verifyJsonOrderById(result);
@@ -85,7 +70,7 @@ public class OrderControllerTest extends AbstractTest {
 
     @Test
     public void putReturnsCorrectResponse() throws Exception {
-        given(orderService.updateById(eq(customerId), eq(orderId), any(Order.class))).willReturn(Optional.of(order));
+        given(orderService.updateById(eq(customerId), eq(orderId), any(Order.class))).willReturn(order);
         final ResultActions result = mockMvc.perform(put(orderPath + "/" + orderId)
                 .content(mapper.writeValueAsBytes(order))
                 .contentType(MediaType.APPLICATION_JSON_UTF8));
@@ -114,7 +99,7 @@ public class OrderControllerTest extends AbstractTest {
 
     private void verifyJsonOrder(final ResultActions result, String orderPath) throws Exception {
         result
-                .andExpect(jsonPath(orderPath + ".id", is(order.getOrderId())))
-                .andExpect(jsonPath(orderPath + ".value", is(order.getValue())));
+                .andExpect(jsonPath(orderPath + ".id", is(order.getId())))
+                .andExpect(jsonPath(orderPath + ".value", is(order.getValue().doubleValue())));
     }
 }

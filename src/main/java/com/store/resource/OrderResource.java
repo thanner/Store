@@ -16,10 +16,9 @@ public class OrderResource extends ResourceSupport {
 
     public OrderResource(Order order) {
         this.order = order;
-        final Integer customerId = order.getCustomer().getCustomerId();
-        final Integer orderId = order.getOrderId();
+        final Integer customerId = order.getCustomer().getId();
+        final Integer orderId = order.getId();
 
-        //add(linkTo(OrderController.class).withRel("orders"));
         add(linkTo(methodOn(OrderItemController.class).getOrderItem(customerId, orderId, null, null, null, null, null)).withRel("customerOrderItems"));
         add(linkTo(methodOn(OrderController.class).getOrderById(customerId, orderId)).withSelfRel());
     }

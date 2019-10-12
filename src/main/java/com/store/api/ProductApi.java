@@ -25,7 +25,7 @@ public interface ProductApi {
             @ApiResponse(code = 405, message = "Invalid input")
     })
     @PostMapping
-    ResponseEntity<ProductResource> addProduct(@ApiParam(value = "Product that will be added", required = true) @Valid Product product);
+    ResponseEntity<ProductResource> addProduct(@ApiParam(value = "Product that will be added", required = true) @Valid @RequestBody Product product);
 
     @ApiOperation(value = "Get product by id", nickname = "getProductById", response = Product.class,
             notes = "Retrieves a product by id",
@@ -61,7 +61,7 @@ public interface ProductApi {
     })
     @PutMapping(value = "/{productId}")
     ResponseEntity<ProductResource> updateProductById(@ApiParam(value = "Product id that will be updated", required = true) @Valid @PathVariable Integer productId,
-                                                      @ApiParam(value = "Data that will be updated in product", required = true) @Valid Product product);
+                                                      @ApiParam(value = "Data that will be updated in product", required = true) @Valid @RequestBody Product product);
 
 
     @ApiOperation(value = "Delete product", nickname = "deleteProductById", authorizations = {@Authorization(value = "bearerAuth")}, tags = {"product",})

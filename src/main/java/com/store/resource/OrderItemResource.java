@@ -15,11 +15,10 @@ public class OrderItemResource extends ResourceSupport {
 
     public OrderItemResource(OrderItem orderItem) {
         this.orderItem = orderItem;
-        final Integer customerId = orderItem.getOrder().getCustomer().getCustomerId();
-        final Integer orderId = orderItem.getOrder().getOrderId();
-        final Integer orderItemId = orderItem.getOrderItemId();
+        final Integer customerId = orderItem.getOrder().getCustomer().getId();
+        final Integer orderId = orderItem.getOrder().getId();
+        final Integer orderItemId = orderItem.getId();
 
-        //add(linkTo(OrderItemController.class).withRel("orderItems"));
         add(linkTo(methodOn(OrderItemController.class).getOrderItemById(customerId, orderId, orderItemId)).withSelfRel());
     }
 

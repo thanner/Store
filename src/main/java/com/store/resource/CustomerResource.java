@@ -16,7 +16,7 @@ public class CustomerResource extends ResourceSupport {
 
     public CustomerResource(Customer customer) {
         this.customer = customer;
-        final Integer customerId = customer.getCustomerId();
+        final Integer customerId = customer.getId();
         add(linkTo(CustomerController.class).withRel("customers"));
         add(linkTo(methodOn(OrderController.class).getOrder(customerId, null, null, null, null, null)).withRel("customerOrders"));
         add(linkTo(methodOn(CustomerController.class).getCustomerById(customerId)).withSelfRel());

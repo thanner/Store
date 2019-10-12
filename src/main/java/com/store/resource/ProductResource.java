@@ -15,7 +15,7 @@ public class ProductResource extends ResourceSupport {
 
     public ProductResource(Product product) {
         this.product = product;
-        final Integer productId = product.getProductId();
+        final Integer productId = product.getId();
         add(linkTo(ProductController.class).withRel("products"));
         add(linkTo(methodOn(ProductController.class).getProductById(productId)).withSelfRel());
     }

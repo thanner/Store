@@ -1,27 +1,21 @@
-package com.store;
+package com.store.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.store.controller.CustomerController;
-import com.store.domain.AccountStatus;
+import com.store.AbstractTest;
 import com.store.domain.Customer;
-import com.store.service.interfaces.CustomerService;
+import com.store.service.CustomerService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,12 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = CustomerController.class, secure = false)
 public class CustomerControllerTest extends AbstractTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
     @MockBean
     private CustomerService customerService;
 
@@ -46,16 +34,13 @@ public class CustomerControllerTest extends AbstractTest {
 
     @Before
     public void setup() {
-        setupCustomer();
-    }
-
-    private void setupCustomer() {
-        customer = Customer.builder().customerId(customerId).name("name").cpf("11111111111").birthDate(LocalDate.now()).accountStatus(AccountStatus.ACTIVE).build();
+        super.setup();
+        customer = setupCustomer();
     }
 
     @Test
     public void getCustomerByIdShouldReturnCustomer() throws Exception {
-        given(customerService.findCustomer(any(Integer.class))).willReturn(Optional.of(customer));
+        given(customerService.findCustomer(any(Integer.class))).willReturn(customer);
         final ResultActions result = mockMvc.perform(get(customerPath + "/" + customerId));
         result.andExpect(status().isOk());
         verifyJsonCustomerById(result);
@@ -67,7 +52,8 @@ public class CustomerControllerTest extends AbstractTest {
         customerList.add(customer);
         Page<Customer> pageCustomer = new PageImpl<>(customerList);
         given(customerService.findCustomerByExample(any(Customer.class), any(Pageable.class))).willReturn(pageCustomer);
-        final ResultActions result = mockMvc.perform(get(customerPath + "?id=" + customer.getCustomerId() + "&name=" + customer.getName()));
+
+        final ResultActions result = mockMvc.perform(get(customerPath + "?id=" + customer.getId() + "&name=" + customer.getName()));
         result.andExpect(status().isOk());
         verifyJsonCustomerPaged(result);
     }
@@ -85,7 +71,7 @@ public class CustomerControllerTest extends AbstractTest {
 
     @Test
     public void putReturnsCorrectResponse() throws Exception {
-        given(customerService.updateById(eq(customerId), any(Customer.class))).willReturn(Optional.of(customer));
+        given(customerService.updateById(eq(customerId), any(Customer.class))).willReturn(customer);
         final ResultActions result = mockMvc.perform(put(customerPath + "/" + customerId)
                 .content(mapper.writeValueAsBytes(customer))
                 .contentType(MediaType.APPLICATION_JSON_UTF8));
@@ -115,7 +101,7 @@ public class CustomerControllerTest extends AbstractTest {
 
     private void verifyJsonCustomer(final ResultActions result, String customerPath) throws Exception {
         result
-                .andExpect(jsonPath(customerPath + ".id", is(customer.getCustomerId())))
+                .andExpect(jsonPath(customerPath + ".id", is(customer.getId())))
                 .andExpect(jsonPath(customerPath + ".name", is(customer.getName())))
                 .andExpect(jsonPath(customerPath + ".cpf", is(customer.getCpf())))
                 .andExpect(jsonPath(customerPath + ".birthDate", is(customer.getBirthDate().format(formatter))))
