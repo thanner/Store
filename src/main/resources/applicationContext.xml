@@ -21,19 +21,19 @@
         <property name="customer" ref="customer"/>
     </bean>
 
+    <bean id="product" class="com.store.domain.Product">
+        <property name="id" value="1"/>
+        <property name="name" value="name"/>
+        <property name="productStatus" value="ACTIVE"/>
+        <property name="suggestedPrice" value="1.20"/>
+    </bean>
+
     <bean id="orderItem" class="com.store.domain.OrderItem">
         <property name="id" value="1"/>
         <property name="amount" value="5.0"/>
         <property name="price" value="1.20"/>
         <property name="order" ref="order"/>
         <property name="product" ref="product"/>
-    </bean>
-
-    <bean id="product" class="com.store.domain.Product">
-        <property name="id" value="1"/>
-        <property name="name" value="name"/>
-        <property name="productStatus" value="ACTIVE"/>
-        <property name="suggestedPrice" value="1.20"/>
     </bean>
 
 </beans>

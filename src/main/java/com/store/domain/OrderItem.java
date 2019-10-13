@@ -29,7 +29,7 @@ public class OrderItem {
     @JoinColumn(name = "id_pedido", nullable = false)
     private Order order;
 
-    @JsonBackReference(value = "product")
+    //@JsonBackReference(value = "product")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_produto", nullable = false)
     private Product product;

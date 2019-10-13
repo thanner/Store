@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.MediaType;
@@ -19,9 +20,11 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @Ignore
+@AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 public class AbstractTest {
 
@@ -74,6 +77,10 @@ public class AbstractTest {
 
     protected ResultActions postResource(String path, Object resource) throws Exception {
         return mockMvc.perform(post(path).content(toJson(resource)).contentType(MediaType.APPLICATION_JSON_UTF8));
+    }
+
+    protected ResultActions deleteResource(String path, Integer id) throws Exception {
+        return mockMvc.perform(delete(path + "/" + id));
     }
 
 }

@@ -102,7 +102,7 @@ public class CustomerServiceTest extends AbstractTest {
 
     private void verifyCustomer(Customer customerToVerify) {
         assertThat(customerToVerify)
-                .hasFieldOrPropertyWithValue("customerId", customer.getId())
+                .hasFieldOrPropertyWithValue("id", customer.getId())
                 .hasFieldOrPropertyWithValue("name", customer.getName())
                 .hasFieldOrPropertyWithValue("cpf", customer.getCpf())
                 .hasFieldOrPropertyWithValue("birthDate", customer.getBirthDate())

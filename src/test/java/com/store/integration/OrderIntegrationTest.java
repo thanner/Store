@@ -7,19 +7,18 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OrderIntegrationTest extends AbstractTest {
 
@@ -35,7 +34,6 @@ public class OrderIntegrationTest extends AbstractTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @Test
@@ -47,6 +45,8 @@ public class OrderIntegrationTest extends AbstractTest {
 
     @Test
     public void stage2_whenGetOrder_thenAssertionSucceeds() throws Exception {
+        postResource(orderPath, order);
+
         final ResultActions result = mockMvc.perform(get(orderPath + "/" + orderId));
         result.andExpect(status().isOk());
         verifyJsonOrderById(result);
@@ -54,6 +54,8 @@ public class OrderIntegrationTest extends AbstractTest {
 
     @Test
     public void stage3_whenGetOrderPaged_thenAssertionSucceeds() throws Exception {
+        postResource(orderPath, order);
+
         final ResultActions result = mockMvc.perform(get(orderPath + "?id=" + orderId));
         result.andExpect(status().isOk());
         verifyJsonOrderPaged(result);
@@ -61,6 +63,8 @@ public class OrderIntegrationTest extends AbstractTest {
 
     @Test
     public void stage4_whenPutOrder_thenAssertionSucceeds() throws Exception {
+        postResource(orderPath, order);
+
         final ResultActions result = mockMvc.perform(put(orderPath + "/" + orderId)
                 .content(mapper.writeValueAsBytes(order))
                 .contentType(MediaType.APPLICATION_JSON_UTF8));
@@ -70,9 +74,9 @@ public class OrderIntegrationTest extends AbstractTest {
 
     @Test
     public void stage5_whenDeleteOrder_thenAssertionSucceeds() throws Exception {
-        mockMvc.perform(delete(orderPath + "/" + orderId))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string(StringUtils.EMPTY));
+        postResource(orderPath, order);
+
+        deleteResource(orderPath, orderId).andExpect(status().isNoContent()).andExpect(content().string(StringUtils.EMPTY));
     }
 
     private void verifyJsonOrderById(final ResultActions result) throws Exception {

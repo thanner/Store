@@ -32,7 +32,6 @@ public class OrderItemService {
         this.copier = copier;
     }
 
-
     public OrderItem save(Integer customerId, Integer orderId, OrderItem orderItem) {
         Order order = orderService.findOrder(customerId, orderId);
         Product product = orderItem.getProduct() != null ? productService.findProduct(orderItem.getProduct().getId()) : null;

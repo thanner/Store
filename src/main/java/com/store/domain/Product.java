@@ -1,6 +1,6 @@
 package com.store.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.*;
@@ -29,7 +29,8 @@ public class Product {
     private BigDecimal suggestedPrice;
 
     @ToString.Exclude
-    @JsonManagedReference(value = "product")
+    //@JsonManagedReference(value = "product")
+    @JsonIgnore
     @OneToMany(targetEntity = OrderItem.class, mappedBy = "product", fetch = FetchType.LAZY)
     private List<OrderItem> orderItemList;
 

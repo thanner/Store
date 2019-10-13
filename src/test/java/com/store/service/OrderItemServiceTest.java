@@ -104,7 +104,7 @@ public class OrderItemServiceTest extends AbstractTest {
 
     private void verifyOrderItem(OrderItem orderToVerify) {
         assertThat(orderToVerify)
-                .hasFieldOrPropertyWithValue("orderItemId", orderItem.getId())
+                .hasFieldOrPropertyWithValue("id", orderItem.getId())
                 .hasFieldOrPropertyWithValue("amount", orderItem.getAmount())
                 .hasFieldOrPropertyWithValue("price", orderItem.getPrice())
         ;

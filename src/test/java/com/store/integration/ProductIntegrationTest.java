@@ -7,19 +7,18 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ProductIntegrationTest extends AbstractTest {
 
@@ -40,6 +39,8 @@ public class ProductIntegrationTest extends AbstractTest {
 
     @Test
     public void stage2_whenGetProduct_thenAssertionSucceeds() throws Exception {
+        postResource(productPath, product);
+
         final ResultActions result = mockMvc.perform(get(productPath + "/" + productId));
         result.andExpect(status().isOk());
         verifyJsonProductById(result);
@@ -47,6 +48,8 @@ public class ProductIntegrationTest extends AbstractTest {
 
     @Test
     public void stage3_whenGetProductPaged_thenAssertionSucceeds() throws Exception {
+        postResource(productPath, product);
+
         final ResultActions result = mockMvc.perform(get(productPath + "?id=" + product.getId() + "&name=" + product.getName()));
         result.andExpect(status().isOk());
         verifyJsonProductPaged(result);
@@ -54,6 +57,8 @@ public class ProductIntegrationTest extends AbstractTest {
 
     @Test
     public void stage4_whenPutProduct_thenAssertionSucceeds() throws Exception {
+        postResource(productPath, product);
+
         final ResultActions result = mockMvc.perform(put(productPath + "/" + productId)
                 .content(mapper.writeValueAsBytes(product))
                 .contentType(MediaType.APPLICATION_JSON_UTF8));
@@ -63,9 +68,9 @@ public class ProductIntegrationTest extends AbstractTest {
 
     @Test
     public void stage5_whenDeleteProduct_thenAssertionSucceeds() throws Exception {
-        mockMvc.perform(delete(productPath + "/" + productId))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string(StringUtils.EMPTY));
+        postResource(productPath, product);
+
+        deleteResource(productPath, productId).andExpect(status().isNoContent()).andExpect(content().string(StringUtils.EMPTY));
     }
 
     private void verifyJsonProductById(final ResultActions result) throws Exception {

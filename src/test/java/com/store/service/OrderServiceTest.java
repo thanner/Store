@@ -102,7 +102,7 @@ public class OrderServiceTest extends AbstractTest {
 
     private void verifyOrder(Order orderToVerify) {
         assertThat(orderToVerify)
-                .hasFieldOrPropertyWithValue("orderId", order.getId())
+                .hasFieldOrPropertyWithValue("id", order.getId())
                 .hasFieldOrPropertyWithValue("value", order.getValue())
         ;
     }

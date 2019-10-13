@@ -102,7 +102,7 @@ public class ProductServiceTest extends AbstractTest {
 
     private void verifyProduct(Product productToVerify) {
         assertThat(productToVerify)
-                .hasFieldOrPropertyWithValue("productId", product.getId())
+                .hasFieldOrPropertyWithValue("id", product.getId())
                 .hasFieldOrPropertyWithValue("name", product.getName())
                 .hasFieldOrPropertyWithValue("suggestedPrice", product.getSuggestedPrice())
                 .hasFieldOrPropertyWithValue("productStatus", product.getProductStatus())
