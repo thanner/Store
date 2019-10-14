@@ -1,12 +1,14 @@
 package com.store.api;
 
 import com.store.domain.OrderItem;
+import com.store.exception.ExceptionMessage;
 import com.store.resource.OrderItemResource;
 import io.swagger.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,10 @@ public interface OrderItemApi {
             @ApiResponse(code = 401, message = "Access token is missing or invalid"),
             @ApiResponse(code = 405, message = "Invalid input")
     })
-    @PostMapping
+    @PostMapping(
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     ResponseEntity<OrderItemResource> addOrderItem(@ApiParam(value = "Customer id of the order item", required = true) @Valid @PathVariable Integer customerId,
                                                    @ApiParam(value = "Order id of the order item", required = true) @Valid @PathVariable Integer orderId,
                                                    @ApiParam(value = "Order item that will be added", required = true) @Valid @RequestBody OrderItem orderItem);
@@ -34,7 +39,11 @@ public interface OrderItemApi {
             @ApiResponse(code = 200, message = "successful operation", response = OrderItem.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @GetMapping(value = "/{orderItemId}")
+    @GetMapping(
+            value = "/{orderItemId}",
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     ResponseEntity<OrderItemResource> getOrderItemById(@ApiParam(value = "Customer id") @Valid @PathVariable Integer customerId,
                                                        @ApiParam(value = "Order id") @Valid @PathVariable Integer orderId,
                                                        @ApiParam(value = "Order item id") @Valid @PathVariable Integer orderItemId);
@@ -46,7 +55,10 @@ public interface OrderItemApi {
             @ApiResponse(code = 200, message = "successful operation", response = OrderItem.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @GetMapping
+    @GetMapping(
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     ResponseEntity<PagedResources<OrderItem>> getOrderItem(@ApiParam(value = "Customer id") @Valid @PathVariable Integer customerId,
                                                            @ApiParam(value = "Order id") @Valid @PathVariable Integer orderId,
                                                            @ApiParam(value = "Order item id") @Valid @RequestParam(value = "id", required = false) Integer orderItemId,
@@ -60,10 +72,14 @@ public interface OrderItemApi {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid order item id supplied"),
             @ApiResponse(code = 401, message = "Access token is missing or invalid"),
-            @ApiResponse(code = 404, message = "Order item not found"),
+            @ApiResponse(code = 404, message = ExceptionMessage.OrderItemNotFound),
             @ApiResponse(code = 405, message = "Validation exception")
     })
-    @PutMapping(value = "/{orderItemId}")
+    @PutMapping(
+            value = "/{orderItemId}",
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     ResponseEntity<OrderItemResource> updateOrderItemById(@ApiParam(value = "Customer id of the order item", required = true) @Valid @PathVariable Integer customerId,
                                                           @ApiParam(value = "Order id of the order item", required = true) @Valid @PathVariable Integer orderId,
                                                           @ApiParam(value = "Order item id that will be updated", required = true) @Valid @PathVariable Integer orderItemId,
@@ -74,9 +90,13 @@ public interface OrderItemApi {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid order item id supplied"),
             @ApiResponse(code = 401, message = "Access token is missing or invalid"),
-            @ApiResponse(code = 404, message = "Customer not found")
+            @ApiResponse(code = 404, message = ExceptionMessage.OrderItemNotFound)
     })
-    @DeleteMapping(value = "/{orderItemId}")
+    @DeleteMapping(
+            value = "/{orderItemId}",
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     ResponseEntity<Void> deleteOrderItemById(@ApiParam(value = "Customer id of the order item", required = true) @Valid @PathVariable Integer customerId,
                                              @ApiParam(value = "Order id of the order item", required = true) @Valid @PathVariable Integer orderId,
                                              @ApiParam(value = "Order item id that will be deleted", required = true) @Valid @PathVariable Integer orderItemId);
