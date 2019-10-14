@@ -3,9 +3,14 @@ package com.store.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.store.util.MoneySerializer;
+import com.store.util.ValidatorFieldMessage;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -22,14 +27,16 @@ public class Product {
     @Column(name = "id")
     private Integer id;
 
+    @NotEmpty(message = ValidatorFieldMessage.NameEmpty)
     @Column(name = "nome", length = 100)
     private String name;
 
+    @DecimalMin("0.00")
+    @JsonSerialize(using = MoneySerializer.class)
     @Column(name = "preco_sugerido", precision = 10, scale = 2)
     private BigDecimal suggestedPrice;
 
     @ToString.Exclude
-    //@JsonManagedReference(value = "product")
     @JsonIgnore
     @OneToMany(targetEntity = OrderItem.class, mappedBy = "product", fetch = FetchType.LAZY)
     private List<OrderItem> orderItemList;

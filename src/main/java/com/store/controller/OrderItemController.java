@@ -2,6 +2,8 @@ package com.store.controller;
 
 import com.store.api.OrderItemApi;
 import com.store.domain.OrderItem;
+import com.store.exception.ExceptionMessage;
+import com.store.exception.PostWithIdException;
 import com.store.resource.OrderItemResource;
 import com.store.service.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,10 @@ public class OrderItemController implements OrderItemApi {
 
     @Override
     public ResponseEntity<OrderItemResource> addOrderItem(Integer customerId, Integer orderId, OrderItem orderItem) {
+        if (orderItem.getId() != null) {
+            throw new PostWithIdException(ExceptionMessage.PostWithId);
+        }
+
         OrderItem persistedOrderItem = orderItemService.save(customerId, orderId, orderItem);
         return new ResponseEntity<>(new OrderItemResource(persistedOrderItem), HttpStatus.CREATED);
     }

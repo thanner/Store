@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(value = CustomerService.class, secure = false)
@@ -35,25 +35,27 @@ public class CustomerServiceTest extends AbstractTest {
     @MockBean
     private NonNullPropertiesCopier copier;
 
-    private Customer customer;
+    private Customer customerVerification;
+    private Customer customerTest;
 
     private Integer wrongCustomerId;
 
     @Before
     public void setup() {
         super.setup();
-        customer = setupCustomer();
+        customerVerification = setupCustomer();
+        customerTest = customerVerification.toBuilder().build();
         wrongCustomerId = customerId + 1;
-        given(customerRepository.findById(customerId)).willReturn(Optional.ofNullable(customer));
+
+        given(customerRepository.findById(customerId)).willReturn(Optional.ofNullable(customerTest));
     }
 
     @Test
     public void whenSaveCustomerReturnActiveCustomer_thenAssertionSucceeds() {
-        Customer inactiveCustomer = setupCustomer();
-        inactiveCustomer.setAccountStatus(AccountStatus.INACTIVE);
-        given(customerRepository.save(inactiveCustomer)).willReturn(inactiveCustomer);
+        customerTest.setAccountStatus(AccountStatus.INACTIVE);
+        given(customerRepository.save(customerTest)).willReturn(customerTest);
 
-        Customer persisted = customerService.createNewCustomer(inactiveCustomer);
+        Customer persisted = customerService.createNewCustomer(customerTest);
         verifyCustomer(persisted);
     }
 
@@ -66,17 +68,17 @@ public class CustomerServiceTest extends AbstractTest {
     @Test
     public void whenFindCustomerByExample_thenAssertionSucceeds() {
         List<Customer> customerList = new ArrayList<>();
-        customerList.add(customer);
+        customerList.add(customerTest);
         Page<Customer> pageCustomer = new PageImpl<>(customerList);
-        given(customerRepository.findAll(Example.of(customer), Pageable.unpaged())).willReturn(pageCustomer);
+        given(customerRepository.findAll(Example.of(customerTest), Pageable.unpaged())).willReturn(pageCustomer);
 
-        Page<Customer> persisted = customerService.findCustomerByExample(customer, Pageable.unpaged());
+        Page<Customer> persisted = customerService.findCustomerByExample(customerTest, Pageable.unpaged());
         verifyCustomer(persisted.getContent().get(0));
     }
 
     @Test
     public void whenUpdateCustomer_thenAssertionSucceeds() {
-        Customer persisted = customerService.updateById(customerId, customer);
+        Customer persisted = customerService.updateById(customerId, customerTest);
         verifyCustomer(persisted);
     }
 
@@ -92,7 +94,7 @@ public class CustomerServiceTest extends AbstractTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void whenUpdateCustomerNotFound_thenResourceNotFoundException() {
-        customerService.updateById(wrongCustomerId, customer);
+        customerService.updateById(wrongCustomerId, customerTest);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -101,13 +103,11 @@ public class CustomerServiceTest extends AbstractTest {
     }
 
     private void verifyCustomer(Customer customerToVerify) {
-        assertThat(customerToVerify)
-                .hasFieldOrPropertyWithValue("id", customer.getId())
-                .hasFieldOrPropertyWithValue("name", customer.getName())
-                .hasFieldOrPropertyWithValue("cpf", customer.getCpf())
-                .hasFieldOrPropertyWithValue("birthDate", customer.getBirthDate())
-                .hasFieldOrPropertyWithValue("accountStatus", customer.getAccountStatus())
-        ;
+        assertEquals(customerToVerify.getId(), customerVerification.getId());
+        assertEquals(customerToVerify.getName(), customerVerification.getName());
+        assertEquals(customerToVerify.getCpf(), customerVerification.getCpf());
+        assertEquals(customerToVerify.getBirthDate(), customerVerification.getBirthDate());
+        assertEquals(customerToVerify.getAccountStatus(), customerVerification.getAccountStatus());
     }
 
 }

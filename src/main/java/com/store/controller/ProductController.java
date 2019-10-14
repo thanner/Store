@@ -2,6 +2,8 @@ package com.store.controller;
 
 import com.store.api.ProductApi;
 import com.store.domain.Product;
+import com.store.exception.ExceptionMessage;
+import com.store.exception.PostWithIdException;
 import com.store.resource.ProductResource;
 import com.store.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,10 @@ public class ProductController implements ProductApi {
 
     @Override
     public ResponseEntity<ProductResource> addProduct(Product product) {
+        if (product.getId() != null) {
+            throw new PostWithIdException(ExceptionMessage.PostWithId);
+        }
+
         Product persistedProduct = productService.save(product);
         return new ResponseEntity<>(new ProductResource(persistedProduct), HttpStatus.CREATED);
     }

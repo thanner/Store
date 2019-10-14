@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(value = OrderItemService.class, secure = false)
@@ -37,53 +37,55 @@ public class OrderItemServiceTest extends AbstractTest {
     @MockBean
     private NonNullPropertiesCopier copier;
 
-    private OrderItem orderItem;
+    private OrderItem orderItemVerification;
+    private OrderItem orderItemTest;
 
     private Integer wrongOrderItemId;
 
     @Before
     public void setup() {
         super.setup();
-        orderItem = setupOrderItem();
+        orderItemVerification = setupOrderItem();
+        orderItemTest = setupOrderItem().toBuilder().build();
         wrongOrderItemId = orderItemId + 1;
 
-        given(orderItemRepository.findByIdAndOrder_IdAndOrder_Customer_Id(orderItemId, orderId, customerId)).willReturn(Optional.ofNullable(orderItem));
+        given(orderItemRepository.findByIdAndOrder_IdAndOrder_Customer_Id(orderItemId, orderId, customerId)).willReturn(Optional.ofNullable(orderItemTest));
         given(orderItemRepository.existsByIdAndOrder_IdAndOrder_Customer_Id(orderItemId, orderId, customerId)).willReturn(true);
     }
 
     @Test
-    public void whenSaveOrderReturnActiveOrder_thenAssertionSucceeds() {
-        given(orderItemRepository.save(orderItem)).willReturn(orderItem);
+    public void whenSaveOrderItemReturnOrderItem_thenAssertionSucceeds() {
+        given(orderItemRepository.save(orderItemTest)).willReturn(orderItemTest);
 
-        OrderItem persisted = orderItemService.save(customerId, orderId, orderItem);
+        OrderItem persisted = orderItemService.save(customerId, orderId, orderItemTest);
         verifyOrderItem(persisted);
     }
 
     @Test
-    public void whenFindOrder_thenAssertionSucceeds() {
+    public void whenFindOrderItem_thenAssertionSucceeds() {
         OrderItem persisted = orderItemService.findOrderItem(customerId, orderId, orderItemId);
         verifyOrderItem(persisted);
     }
 
     @Test
-    public void whenFindOrderByExample_thenAssertionSucceeds() {
+    public void whenFindOrderItemByExample_thenAssertionSucceeds() {
         List<OrderItem> orderItemList = new ArrayList<>();
-        orderItemList.add(orderItem);
+        orderItemList.add(orderItemTest);
         Page<OrderItem> pageOrder = new PageImpl<>(orderItemList);
-        given(orderItemRepository.findAll(Example.of(orderItem), Pageable.unpaged())).willReturn(pageOrder);
+        given(orderItemRepository.findAll(Example.of(orderItemTest), Pageable.unpaged())).willReturn(pageOrder);
 
-        Page<OrderItem> persisted = orderItemService.findOrderItemByExample(customerId, orderId, orderItem, Pageable.unpaged());
+        Page<OrderItem> persisted = orderItemService.findOrderItemByExample(customerId, orderId, orderItemTest, Pageable.unpaged());
         verifyOrderItem(persisted.getContent().get(0));
     }
 
     @Test
-    public void whenUpdateOrder_thenAssertionSucceeds() {
-        OrderItem persisted = orderItemService.updateById(customerId, orderId, orderItemId, orderItem);
+    public void whenUpdateOrderItem_thenAssertionSucceeds() {
+        OrderItem persisted = orderItemService.updateById(customerId, orderId, orderItemId, orderItemTest);
         verifyOrderItem(persisted);
     }
 
     @Test
-    public void whenDeleteOrder_thenAssertionSucceeds() {
+    public void whenDeleteOrderItem_thenAssertionSucceeds() {
         orderItemService.deleteById(customerId, orderId, orderItemId);
     }
 
@@ -94,7 +96,7 @@ public class OrderItemServiceTest extends AbstractTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void whenUpdateOrderNotFound_thenResourceNotFoundException() {
-        orderItemService.updateById(customerId, orderId, wrongOrderItemId, orderItem);
+        orderItemService.updateById(customerId, orderId, wrongOrderItemId, orderItemTest);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -102,12 +104,10 @@ public class OrderItemServiceTest extends AbstractTest {
         orderItemService.deleteById(customerId, orderId, wrongOrderItemId);
     }
 
-    private void verifyOrderItem(OrderItem orderToVerify) {
-        assertThat(orderToVerify)
-                .hasFieldOrPropertyWithValue("id", orderItem.getId())
-                .hasFieldOrPropertyWithValue("amount", orderItem.getAmount())
-                .hasFieldOrPropertyWithValue("price", orderItem.getPrice())
-        ;
+    private void verifyOrderItem(OrderItem orderItemToVerify) {
+        assertEquals(orderItemToVerify.getId(), orderItemVerification.getId());
+        assertEquals(0, orderItemToVerify.getAmount().compareTo(orderItemVerification.getAmount()));
+        assertEquals(0, orderItemToVerify.getPrice().compareTo(orderItemVerification.getPrice()));
     }
 
 }

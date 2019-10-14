@@ -2,6 +2,8 @@ package com.store.controller;
 
 import com.store.api.CustomerApi;
 import com.store.domain.Customer;
+import com.store.exception.ExceptionMessage;
+import com.store.exception.PostWithIdException;
 import com.store.resource.CustomerResource;
 import com.store.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,10 @@ public class CustomerController implements CustomerApi {
 
     @Override
     public ResponseEntity<CustomerResource> addCustomer(Customer customer) {
+        if (customer.getId() != null) {
+            throw new PostWithIdException(ExceptionMessage.PostWithId);
+        }
+
         Customer persistedCustomer = customerService.createNewCustomer(customer);
         return new ResponseEntity<>(new CustomerResource(persistedCustomer), HttpStatus.CREATED);
     }

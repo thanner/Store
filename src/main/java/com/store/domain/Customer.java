@@ -1,15 +1,17 @@
 package com.store.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.store.util.ValidatorFieldMessage;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,18 +28,18 @@ public class Customer {
     @Column(name = "id")
     private Integer id;
 
+    @NotEmpty(message = ValidatorFieldMessage.NameEmpty)
     @Column(name = "nome", length = 100)
     private String name;
 
+    @NotEmpty(message = ValidatorFieldMessage.CpfEmpty)
     @Column(unique = true, columnDefinition = "CHAR(11)")
     private String cpf;
 
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    // Olhar favoritos, duas dependencias pra add
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", locale = "pt-BR", timezone = "Brazil/East")
     @Column(name = "data_nascimento")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate birthDate;
 
     @ToString.Exclude

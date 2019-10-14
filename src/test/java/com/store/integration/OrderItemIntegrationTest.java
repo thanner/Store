@@ -4,81 +4,102 @@ import com.store.AbstractTest;
 import com.store.domain.OrderItem;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static org.hamcrest.core.Is.is;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OrderItemIntegrationTest extends AbstractTest {
 
     private OrderItem orderItem;
+    private OrderItem orderItemWithoutId;
 
     @Before
     public void setup() {
         super.setup();
         orderItem = setupOrderItem();
+        orderItemWithoutId = orderItem.toBuilder().id(null).build();
 
         try {
-            postResource(customerPath, setupCustomer());
-            postResource(orderPath, setupOrder());
-            postResource(productPath, setupProduct());
+            postResource(customerPath, setupCustomer().toBuilder().id(null).build());
+            postResource(orderPath, setupOrder().toBuilder().id(null).build());
+            postResource(productPath, setupProduct().toBuilder().id(null).build());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void stage1_whenPostOrderItem_thenAssertionSucceeds() throws Exception {
-        final ResultActions result = postResource(orderItemPath, orderItem);
+    public void givenNewOrderItem_whenPostOrderItem_thenCreated() throws Exception {
+        final ResultActions result = postResource(orderItemPath, orderItemWithoutId);
         result.andExpect(status().isCreated());
         verifyJsonOrderById(result);
     }
 
     @Test
-    public void stage2_whenGetOrderItem_thenAssertionSucceeds() throws Exception {
-        postResource(orderItemPath, orderItem);
+    public void givenNewOrderItem_whenPostOrderItemWithoutAmount_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, orderItem.toBuilder().amount(null).build());
+        result.andExpect(status().isBadRequest());
+    }
 
-        final ResultActions result = mockMvc.perform(get(orderItemPath + "/" + orderItemId));
+    @Test
+    public void givenNewOrderItem_whenPostOrderItemWithtNegativeAmount_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, orderItem.toBuilder().amount(BigDecimal.valueOf(-1.00)).build());
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenNewOrderItem_whenPostOrderItemWithoutPrice_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, orderItem.toBuilder().price(null).build());
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenNewOrderItem_whenPostOrderItemWithtNegativePrice_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, orderItem.toBuilder().amount(BigDecimal.valueOf(-1.00)).build());
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenOrderItemSaved_whenGetOrderItem_thenAssertionSucceeds() throws Exception {
+        postResource(orderItemPath, orderItemWithoutId);
+
+        final ResultActions result = getResource(orderItemPath + "/" + orderItemId);
         result.andExpect(status().isOk());
         verifyJsonOrderById(result);
     }
 
     @Test
-    public void stage3_whenGetOrderItemPaged_thenAssertionSucceeds() throws Exception {
-        postResource(orderItemPath, orderItem);
+    public void givenOrderItemSaved_whenGetOrderItemPaged_thenAssertionSucceeds() throws Exception {
+        postResource(orderItemPath, orderItemWithoutId);
 
-        final ResultActions result = mockMvc.perform(get(orderItemPath + "?id=" + orderItemId));
+        final ResultActions result = getResource(orderItemPath + "?id=" + orderItemId);
         result.andExpect(status().isOk());
         verifyJsonOrderPaged(result);
     }
 
     @Test
-    public void stage4_whenPutOrderItem_thenAssertionSucceeds() throws Exception {
-        postResource(orderItemPath, orderItem);
+    public void givenOrderItemSaved_whenPutOrderItem_thenOk() throws Exception {
+        postResource(orderItemPath, orderItemWithoutId);
 
-        final ResultActions result = mockMvc.perform(put(orderItemPath + "/" + orderItemId)
-                .content(mapper.writeValueAsBytes(orderItem))
-                .contentType(MediaType.APPLICATION_JSON_UTF8));
+        final ResultActions result = putResource(orderItemPath + "/" + orderItemId, orderItem);
         result.andExpect(status().isOk());
         verifyJsonOrderById(result);
     }
 
     @Test
-    public void stage5_whenDeleteOrderItem_thenAssertionSucceeds() throws Exception {
-        postResource(orderItemPath, orderItem);
+    public void givenOrderItemSaved_whenDeleteOrderItem_thenNoContent() throws Exception {
+        postResource(orderItemPath, orderItemWithoutId);
 
         deleteResource(orderItemPath, orderItemId).andExpect(status().isNoContent()).andExpect(content().string(StringUtils.EMPTY));
     }
@@ -96,7 +117,7 @@ public class OrderItemIntegrationTest extends AbstractTest {
     private void verifyJsonOrder(final ResultActions result, String orderItemPath) throws Exception {
         result
                 .andExpect(jsonPath(orderItemPath + ".id", is(orderItem.getId())))
-                .andExpect(jsonPath(orderItemPath + ".price", is(orderItem.getPrice().doubleValue())))
-                .andExpect(jsonPath(orderItemPath + ".amount", is(orderItem.getAmount().doubleValue())));
+                .andExpect(jsonPath(orderItemPath + ".price", is(orderItem.getPrice().setScale(2, RoundingMode.HALF_UP).toString())))
+                .andExpect(jsonPath(orderItemPath + ".amount", is(orderItem.getAmount().setScale(2, RoundingMode.HALF_UP).toString())));
     }
 }

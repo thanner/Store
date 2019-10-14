@@ -9,7 +9,7 @@
         <property name="cpf" value="11111111111"/>
         <property name="birthDate">
             <bean class="java.time.LocalDate" factory-method="parse">
-                <constructor-arg value="2000-12-31"/>
+                <constructor-arg value="2003-10-25"/>
             </bean>
         </property>
         <property name="accountStatus" value="ACTIVE"/>

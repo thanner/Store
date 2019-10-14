@@ -120,32 +120,16 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "{{$randomFullName}}",
-									"type": "text"
-								},
-								{
-									"key": "cpf",
-									"value": "11111111111",
-									"type": "text"
-								},
-								{
-									"key": "birthDate",
-									"value": "10/10/2010",
-									"type": "text"
-								}
-							],
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{$randomFullName}}\",\n\t\"cpf\": 11111111111,\n\t\"birthDate\": \"2010-01-01\"\n}",
 							"options": {
 								"raw": {
-									"language": "text"
+									"language": "json"
 								}
 							}
 						},
@@ -179,7 +163,7 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
@@ -238,7 +222,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/customers/1",
 							"host": [
@@ -254,6 +244,18 @@
 				},
 				{
 					"name": "Update Customer by Id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5f86fe7f-dd77-4e88-b364-b1b494daa8b2",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -270,27 +272,16 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "{{$randomFullName}}",
-									"type": "text"
-								},
-								{
-									"key": "birthDate",
-									"value": "01/01/2000",
-									"type": "text"
-								}
-							],
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{$randomFullName}}\",\n\t\"cpf\": 11111111111,\n\t\"birthDate\": null\n}",
 							"options": {
 								"raw": {
-									"language": "text"
+									"language": "json"
 								}
 							}
 						},
@@ -321,7 +312,13 @@
 							]
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/customers/1",
 							"host": [
@@ -359,22 +356,16 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "value",
-									"value": "{{$randomInt}}",
-									"type": "text"
-								}
-							],
+							"mode": "raw",
+							"raw": "{}",
 							"options": {
 								"raw": {
-									"language": "text"
+									"language": "json"
 								}
 							}
 						},
@@ -409,7 +400,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": []
@@ -459,7 +456,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/customers/1/orders/1",
 							"host": [
@@ -470,46 +473,13 @@
 								"1",
 								"orders",
 								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Order by Id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "value",
-									"value": "{{$randomInt}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{url}}/customers/1/orders/1",
-							"host": [
-								"{{url}}"
 							],
-							"path": [
-								"customers",
-								"1",
-								"orders",
-								"1"
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -529,7 +499,13 @@
 							]
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/customers/1/orders/1",
 							"host": [
@@ -569,24 +545,18 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "{{$randomProduct}}",
-									"type": "text"
-								},
-								{
-									"key": "suggestedPrice",
-									"value": "{{$randomInt}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{$randomProduct}}\" ,\n\t\"suggestedPrice\": {{$randomInt}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{url}}/products",
@@ -614,7 +584,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/products",
 							"host": [
@@ -641,7 +617,14 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/products/1",
 							"host": [
@@ -669,21 +652,22 @@
 							]
 						},
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "{{$randomProduct}}",
-									"type": "text"
-								},
-								{
-									"key": "suggestedPrice",
-									"value": "{{$randomInt}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n\t\"id\": 1,\n\t\"name\": \"{{$randomProduct}}\" ,\n\t\"suggestedPrice\": {{$randomInt}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{url}}/products/1",
@@ -712,7 +696,13 @@
 							]
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/products/1",
 							"host": [
@@ -750,29 +740,13 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
+								"value": "application/json",
 								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "amount",
-									"value": "{{$randomInt}}",
-									"type": "text"
-								},
-								{
-									"key": "price",
-									"value": "{{$randomInt}}",
-									"type": "text"
-								},
-								{
-									"key": "product.productId",
-									"value": "1",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"amount\": \"{{$randomInt}}\",\n\t\"price\": \"{{$randomInt}}\",\n\t\"product\": {\n\t\t\"id\": 1\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{url}}/customers/1/orders/1/order-items",
@@ -811,7 +785,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/customers/1/orders/1/order-items",
 							"host": [
@@ -842,7 +822,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/customers/1/orders/1/order-items/1",
 							"host": [
@@ -874,21 +860,16 @@
 							]
 						},
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "amount",
-									"value": "{{$randomInt}}",
-									"type": "text"
-								},
-								{
-									"key": "price",
-									"value": "{{$randomInt}}",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"amount\": \"{{$randomInt}}\",\n\t\"price\": \"{{$randomInt}}\",\n\t\"product\": {\n\t\t\"id\": 1\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{url}}/customers/1/orders/1/order-items/1",
@@ -921,7 +902,13 @@
 							]
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{url}}/customers/1/orders/1/order-items/1",
 							"host": [

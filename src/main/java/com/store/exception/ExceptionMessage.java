@@ -9,5 +9,6 @@ public class ExceptionMessage {
 
     public static final String CpfAlreadyUsed = "O CPF em questão já está sendo utilizado por outro usuário.";
 
+    public static final String PostWithId = "O recurso não deve conter id na operação de POST.";
 }
 

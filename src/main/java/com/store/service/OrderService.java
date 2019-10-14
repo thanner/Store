@@ -5,13 +5,15 @@ import com.store.domain.Order;
 import com.store.exception.ExceptionMessage;
 import com.store.exception.ResourceNotFoundException;
 import com.store.repository.OrderRepository;
-import com.store.util.NonNullPropertiesCopier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 @Transactional
@@ -19,16 +21,15 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CustomerService customerService;
-    private final NonNullPropertiesCopier copier;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, CustomerService customerService, NonNullPropertiesCopier copier) {
+    public OrderService(OrderRepository orderRepository, CustomerService customerService) {
         this.orderRepository = orderRepository;
         this.customerService = customerService;
-        this.copier = copier;
     }
 
     public Order save(Integer customerId, Order order) {
+        order.setValue(BigDecimal.ZERO);
         Customer optionalCustomer = customerService.findCustomer(customerId);
         order.setCustomer(optionalCustomer);
         return orderRepository.save(order);
@@ -43,9 +44,10 @@ public class OrderService {
         return orderRepository.findAll(Example.of(order), pageable);
     }
 
-    public Order updateById(Integer customerId, Integer orderId, Order order) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Order updateValueById(Integer customerId, Integer orderId) {
         Order persisted = findOrderById(customerId, orderId);
-        copier.copyNonNullProperties(order, persisted);
+        persisted.setValue(calculateValue(persisted));
         return persisted;
     }
 
@@ -55,6 +57,10 @@ public class OrderService {
         } else {
             throw new ResourceNotFoundException(ExceptionMessage.OrderNotFound);
         }
+    }
+
+    private BigDecimal calculateValue(Order order) {
+        return order.getOrderItemList().stream().map(a -> a.getAmount().multiply(a.getPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private Order findOrderById(Integer customerId, Integer orderId) throws ResourceNotFoundException {

@@ -3,6 +3,8 @@ package com.store.controller;
 import com.store.api.OrderApi;
 import com.store.domain.Customer;
 import com.store.domain.Order;
+import com.store.exception.ExceptionMessage;
+import com.store.exception.PostWithIdException;
 import com.store.resource.OrderResource;
 import com.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,10 @@ public class OrderController implements OrderApi {
 
     @Override
     public ResponseEntity<OrderResource> addOrder(Integer customerId, Order order) {
+        if (order.getId() != null) {
+            throw new PostWithIdException(ExceptionMessage.PostWithId);
+        }
+
         Order persistedOrder = orderService.save(customerId, order);
         return new ResponseEntity<>(new OrderResource(persistedOrder), HttpStatus.CREATED);
     }
@@ -44,12 +50,6 @@ public class OrderController implements OrderApi {
         Order orderExample = Order.builder().id(orderId).customer(customer).value(value).build();
         Page<Order> orderPage = orderService.findOrderByExample(customerId, orderExample, pageable);
         return new ResponseEntity<PagedResources<Order>>(assembler.toResource(orderPage), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<OrderResource> updateOrderById(Integer customerId, Integer orderId, Order order) {
-        Order updatedCustomer = orderService.updateById(customerId, orderId, order);
-        return ResponseEntity.ok(new OrderResource(updatedCustomer));
     }
 
     @Override

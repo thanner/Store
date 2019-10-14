@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(value = ProductService.class, secure = false)
@@ -35,25 +35,27 @@ public class ProductServiceTest extends AbstractTest {
     @MockBean
     private NonNullPropertiesCopier copier;
 
-    private Product product;
+    private Product productVerification;
+    private Product productTest;
 
     private Integer wrongProductId;
 
     @Before
     public void setup() {
         super.setup();
-        product = setupProduct();
+        productVerification = setupProduct();
+        productTest = productVerification.toBuilder().build();
         wrongProductId = productId + 1;
-        given(productRepository.findById(productId)).willReturn(Optional.ofNullable(product));
+
+        given(productRepository.findById(productId)).willReturn(Optional.ofNullable(productTest));
     }
 
     @Test
     public void whenSaveProductReturnActiveProduct_thenAssertionSucceeds() {
-        Product inactiveProduct = setupProduct();
-        inactiveProduct.setProductStatus(ProductStatus.INACTIVE);
-        given(productRepository.save(inactiveProduct)).willReturn(inactiveProduct);
+        productTest.setProductStatus(ProductStatus.INACTIVE);
+        given(productRepository.save(productTest)).willReturn(productTest);
 
-        Product persisted = productService.save(inactiveProduct);
+        Product persisted = productService.save(productTest);
         verifyProduct(persisted);
     }
 
@@ -66,17 +68,17 @@ public class ProductServiceTest extends AbstractTest {
     @Test
     public void whenFindProductByExample_thenAssertionSucceeds() {
         List<Product> productList = new ArrayList<>();
-        productList.add(product);
+        productList.add(productTest);
         Page<Product> pageProduct = new PageImpl<>(productList);
-        given(productRepository.findAll(Example.of(product), Pageable.unpaged())).willReturn(pageProduct);
+        given(productRepository.findAll(Example.of(productTest), Pageable.unpaged())).willReturn(pageProduct);
 
-        Page<Product> persisted = productService.findProductByExample(product, Pageable.unpaged());
+        Page<Product> persisted = productService.findProductByExample(productTest, Pageable.unpaged());
         verifyProduct(persisted.getContent().get(0));
     }
 
     @Test
     public void whenUpdateProduct_thenAssertionSucceeds() {
-        Product persisted = productService.updateById(productId, product);
+        Product persisted = productService.updateById(productId, productTest);
         verifyProduct(persisted);
     }
 
@@ -92,7 +94,7 @@ public class ProductServiceTest extends AbstractTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void whenUpdateProductNotFound_thenResourceNotFoundException() {
-        productService.updateById(wrongProductId, product);
+        productService.updateById(wrongProductId, productTest);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -101,12 +103,9 @@ public class ProductServiceTest extends AbstractTest {
     }
 
     private void verifyProduct(Product productToVerify) {
-        assertThat(productToVerify)
-                .hasFieldOrPropertyWithValue("id", product.getId())
-                .hasFieldOrPropertyWithValue("name", product.getName())
-                .hasFieldOrPropertyWithValue("suggestedPrice", product.getSuggestedPrice())
-                .hasFieldOrPropertyWithValue("productStatus", product.getProductStatus())
-        ;
+        assertEquals(productToVerify.getId(), productVerification.getId());
+        assertEquals(0, productToVerify.getSuggestedPrice().compareTo(productVerification.getSuggestedPrice()));
+        assertEquals(0, productToVerify.getProductStatus().compareTo(productVerification.getProductStatus()));
     }
 
 }

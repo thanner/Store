@@ -68,23 +68,6 @@ public interface OrderApi {
                                                    PagedResourcesAssembler assembler);
 
 
-    @ApiOperation(value = "Update an existing order", nickname = "updateCustomerById", authorizations = {@Authorization(value = "bearerAuth")}, tags = {"order",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid order id supplied"),
-            @ApiResponse(code = 401, message = "Access token is missing or invalid"),
-            @ApiResponse(code = 404, message = ExceptionMessage.OrderNotFound),
-            @ApiResponse(code = 405, message = "Validation exception")
-    })
-    @PutMapping(
-            value = "/{orderId}",
-            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE},
-            produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE}
-    )
-    ResponseEntity<OrderResource> updateOrderById(@ApiParam(value = "Customer id of the order", required = true) @Valid @PathVariable Integer customerId,
-                                                  @ApiParam(value = "Order id that will be updated", required = true) @Valid @PathVariable Integer orderId,
-                                                  @ApiParam(value = "Data that will be updated in order", required = true) @Valid @RequestBody Order order);
-
-
     @ApiOperation(value = "Delete order", nickname = "deleteOrderById", authorizations = {@Authorization(value = "bearerAuth")}, tags = {"order",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid order id supplied"),
