@@ -1,4 +1,4 @@
-package com.store.util;
+package com.store.message;
 
 public class ValidatorFieldMessage {
 

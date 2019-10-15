@@ -2,8 +2,8 @@ package com.store.controller;
 
 import com.store.api.ProductApi;
 import com.store.domain.Product;
-import com.store.exception.ExceptionMessage;
 import com.store.exception.PostWithIdException;
+import com.store.message.ExceptionMessage;
 import com.store.resource.ProductResource;
 import com.store.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;

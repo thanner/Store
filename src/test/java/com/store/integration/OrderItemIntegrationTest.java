@@ -21,14 +21,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class OrderItemIntegrationTest extends AbstractTest {
 
-    private OrderItem orderItem;
-    private OrderItem orderItemWithoutId;
+    private OrderItem orderItemVerification;
+    private OrderItem orderItemTest;
 
     @Before
     public void setup() {
         super.setup();
-        orderItem = setupOrderItem();
-        orderItemWithoutId = orderItem.toBuilder().id(null).build();
+        orderItemVerification = setupOrderItem();
+        orderItemTest = orderItemVerification.toBuilder().id(null).build();
 
         try {
             postResource(customerPath, setupCustomer().toBuilder().id(null).build());
@@ -41,38 +41,44 @@ public class OrderItemIntegrationTest extends AbstractTest {
 
     @Test
     public void givenNewOrderItem_whenPostOrderItem_thenCreated() throws Exception {
-        final ResultActions result = postResource(orderItemPath, orderItemWithoutId);
+        final ResultActions result = postResource(orderItemPath, orderItemTest);
         result.andExpect(status().isCreated());
         verifyJsonOrderById(result);
     }
 
     @Test
+    public void givenNewOrderItem_whenPostOrderItemWithId_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, orderItemTest.toBuilder().id(orderItemId).build());
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void givenNewOrderItem_whenPostOrderItemWithoutAmount_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, orderItem.toBuilder().amount(null).build());
+        final ResultActions result = postResource(customerPath, orderItemTest.toBuilder().amount(null).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenNewOrderItem_whenPostOrderItemWithtNegativeAmount_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, orderItem.toBuilder().amount(BigDecimal.valueOf(-1.00)).build());
+        final ResultActions result = postResource(customerPath, orderItemTest.toBuilder().amount(BigDecimal.valueOf(-1.00)).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenNewOrderItem_whenPostOrderItemWithoutPrice_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, orderItem.toBuilder().price(null).build());
+        final ResultActions result = postResource(customerPath, orderItemTest.toBuilder().price(null).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenNewOrderItem_whenPostOrderItemWithtNegativePrice_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, orderItem.toBuilder().amount(BigDecimal.valueOf(-1.00)).build());
+        final ResultActions result = postResource(customerPath, orderItemVerification.toBuilder().amount(BigDecimal.valueOf(-1.00)).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenOrderItemSaved_whenGetOrderItem_thenAssertionSucceeds() throws Exception {
-        postResource(orderItemPath, orderItemWithoutId);
+        postResource(orderItemPath, orderItemTest);
 
         final ResultActions result = getResource(orderItemPath + "/" + orderItemId);
         result.andExpect(status().isOk());
@@ -81,7 +87,7 @@ public class OrderItemIntegrationTest extends AbstractTest {
 
     @Test
     public void givenOrderItemSaved_whenGetOrderItemPaged_thenAssertionSucceeds() throws Exception {
-        postResource(orderItemPath, orderItemWithoutId);
+        postResource(orderItemPath, orderItemTest);
 
         final ResultActions result = getResource(orderItemPath + "?id=" + orderItemId);
         result.andExpect(status().isOk());
@@ -90,16 +96,16 @@ public class OrderItemIntegrationTest extends AbstractTest {
 
     @Test
     public void givenOrderItemSaved_whenPutOrderItem_thenOk() throws Exception {
-        postResource(orderItemPath, orderItemWithoutId);
+        postResource(orderItemPath, orderItemTest);
 
-        final ResultActions result = putResource(orderItemPath + "/" + orderItemId, orderItem);
+        final ResultActions result = putResource(orderItemPath + "/" + orderItemId, orderItemVerification);
         result.andExpect(status().isOk());
         verifyJsonOrderById(result);
     }
 
     @Test
     public void givenOrderItemSaved_whenDeleteOrderItem_thenNoContent() throws Exception {
-        postResource(orderItemPath, orderItemWithoutId);
+        postResource(orderItemPath, orderItemTest);
 
         deleteResource(orderItemPath, orderItemId).andExpect(status().isNoContent()).andExpect(content().string(StringUtils.EMPTY));
     }
@@ -116,8 +122,8 @@ public class OrderItemIntegrationTest extends AbstractTest {
 
     private void verifyJsonOrder(final ResultActions result, String orderItemPath) throws Exception {
         result
-                .andExpect(jsonPath(orderItemPath + ".id", is(orderItem.getId())))
-                .andExpect(jsonPath(orderItemPath + ".price", is(orderItem.getPrice().setScale(2, RoundingMode.HALF_UP).toString())))
-                .andExpect(jsonPath(orderItemPath + ".amount", is(orderItem.getAmount().setScale(2, RoundingMode.HALF_UP).toString())));
+                .andExpect(jsonPath(orderItemPath + ".id", is(orderItemVerification.getId())))
+                .andExpect(jsonPath(orderItemPath + ".price", is(orderItemVerification.getPrice().setScale(2, RoundingMode.HALF_UP).toString())))
+                .andExpect(jsonPath(orderItemPath + ".amount", is(orderItemVerification.getAmount().setScale(2, RoundingMode.HALF_UP).toString())));
     }
 }

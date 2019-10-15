@@ -2,8 +2,8 @@ package com.store.controller;
 
 import com.store.api.CustomerApi;
 import com.store.domain.Customer;
-import com.store.exception.ExceptionMessage;
 import com.store.exception.PostWithIdException;
+import com.store.message.ExceptionMessage;
 import com.store.resource.CustomerResource;
 import com.store.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;

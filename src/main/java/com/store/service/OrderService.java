@@ -2,8 +2,8 @@ package com.store.service;
 
 import com.store.domain.Customer;
 import com.store.domain.Order;
-import com.store.exception.ExceptionMessage;
 import com.store.exception.ResourceNotFoundException;
+import com.store.message.ExceptionMessage;
 import com.store.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;

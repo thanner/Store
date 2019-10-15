@@ -18,41 +18,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CustomerIntegrationTest extends AbstractTest {
 
-    private Customer customer;
-    private Customer customerWithoutId;
+    private Customer customerVerification;
+    private Customer customerTest;
 
     @Before
     public void setup() {
         super.setup();
-        customer = setupCustomer();
-        customerWithoutId = customer.toBuilder().id(null).build();
+        customerVerification = setupCustomer();
+        customerTest = customerVerification.toBuilder().id(null).build();
     }
 
-
-    //@WithMockUser(username = "thanner")
-    //@WithMockUser(username = "usernameapi")
     @Test
     public void givenNewCustomer_whenPostCustomer_thenCreated() throws Exception {
-        final ResultActions result = postResource(customerPath, customerWithoutId);
+        final ResultActions result = postResource(customerPath, customerTest);
         result.andExpect(status().isCreated());
         verifyJsonCustomerById(result);
     }
 
     @Test
+    public void givenNewCustomer_whenPostCustomerWithId_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, customerTest.toBuilder().id(customerId).build());
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void givenNewCustomer_whenPostCustomerWithoutName_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, customer.toBuilder().name(null).build());
+        final ResultActions result = postResource(customerPath, customerTest.toBuilder().name(null).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenNewCustomer_whenPostCustomerWithoutCpf_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, customer.toBuilder().cpf(null).build());
+        final ResultActions result = postResource(customerPath, customerTest.toBuilder().cpf(null).build());
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenNewCustomer_whenPostCustomerUsedCpf_thenCpfAlreadyUsedException() throws Exception {
+        postResource(customerPath, customerTest);
+
+        final ResultActions result = postResource(customerPath, customerTest.toBuilder().id(customerId).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenCustomerSaved_whenGetCustomer_thenAssertionSucceeds() throws Exception {
-        postResource(customerPath, customerWithoutId);
+        postResource(customerPath, customerTest);
 
         final ResultActions result = getResource(customerPath + "/" + customerId);
         result.andExpect(status().isOk());
@@ -61,26 +72,26 @@ public class CustomerIntegrationTest extends AbstractTest {
 
     @Test
     public void givenCustomerSaved_whenGetCustomerPaged_thenAssertionSucceeds() throws Exception {
-        postResource(customerPath, customerWithoutId);
+        postResource(customerPath, customerTest);
 
-        final ResultActions result = getResource(customerPath + "?id=" + customer.getId() + "&name=" + customer.getName());
+        final ResultActions result = getResource(customerPath + "?id=" + customerVerification.getId() + "&name=" + customerVerification.getName());
         result.andExpect(status().isOk());
         verifyJsonCustomerPaged(result);
     }
 
     @Test
     public void givenCustomerSaved_whenPutCustomer_thenOk() throws Exception {
-        postResource(customerPath, customerWithoutId);
+        postResource(customerPath, customerTest);
 
-        customer.setName("new name");
-        final ResultActions result = putResource(customerPath + "/" + customerId, customer);
+        customerVerification.setName("new name");
+        final ResultActions result = putResource(customerPath + "/" + customerId, customerVerification);
         result.andExpect(status().isOk());
         verifyJsonCustomerById(result);
     }
 
     @Test
     public void givenCustomerSaved_whenDeleteCustomer_thenNoContent() throws Exception {
-        postResource(customerPath, customerWithoutId);
+        postResource(customerPath, customerTest);
 
         deleteResource(customerPath, customerId).andExpect(status().isNoContent()).andExpect(content().string(StringUtils.EMPTY));
     }
@@ -100,11 +111,11 @@ public class CustomerIntegrationTest extends AbstractTest {
 
     private void verifyJsonCustomer(final ResultActions result, String customerPath) throws Exception {
         result
-                .andExpect(jsonPath(customerPath + ".id", is(customer.getId())))
-                .andExpect(jsonPath(customerPath + ".name", is(customer.getName())))
-                .andExpect(jsonPath(customerPath + ".cpf", is(customer.getCpf())))
-                .andExpect(jsonPath(customerPath + ".birthDate", is(customer.getBirthDate().format(formatter))))
-                .andExpect(jsonPath(customerPath + ".accountStatus", is(customer.getAccountStatus().toString())));
+                .andExpect(jsonPath(customerPath + ".id", is(customerVerification.getId())))
+                .andExpect(jsonPath(customerPath + ".name", is(customerVerification.getName())))
+                .andExpect(jsonPath(customerPath + ".cpf", is(customerVerification.getCpf())))
+                .andExpect(jsonPath(customerPath + ".birthDate", is(customerVerification.getBirthDate().format(formatter))))
+                .andExpect(jsonPath(customerPath + ".accountStatus", is(customerVerification.getAccountStatus().toString())));
     }
 
 }

@@ -2,7 +2,7 @@ package com.store.api;
 
 import com.store.domain.Customer;
 import com.store.domain.Order;
-import com.store.exception.ExceptionMessage;
+import com.store.message.ExceptionMessage;
 import com.store.resource.OrderResource;
 import io.swagger.annotations.*;
 import org.springframework.data.domain.Pageable;

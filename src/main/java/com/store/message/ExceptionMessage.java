@@ -1,4 +1,4 @@
-package com.store.exception;
+package com.store.message;
 
 public class ExceptionMessage {
 

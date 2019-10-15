@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.store.message.ValidatorFieldMessage;
 import com.store.util.MoneySerializer;
-import com.store.util.ValidatorFieldMessage;
 import lombok.*;
 
 import javax.persistence.*;

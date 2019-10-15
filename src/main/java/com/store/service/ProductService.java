@@ -2,8 +2,8 @@ package com.store.service;
 
 import com.store.domain.Product;
 import com.store.domain.ProductStatus;
-import com.store.exception.ExceptionMessage;
 import com.store.exception.ResourceNotFoundException;
+import com.store.message.ExceptionMessage;
 import com.store.repository.ProductRepository;
 import com.store.util.NonNullPropertiesCopier;
 import org.springframework.beans.factory.annotation.Autowired;

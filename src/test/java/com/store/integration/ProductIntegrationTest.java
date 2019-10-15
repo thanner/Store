@@ -21,38 +21,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ProductIntegrationTest extends AbstractTest {
 
-    private Product product;
-    private Product productWithoutId;
+    private Product productVerification;
+    private Product productTest;
 
     @Before
     public void setup() {
         super.setup();
-        product = setupProduct();
-        productWithoutId = product.toBuilder().id(null).build();
+        productVerification = setupProduct();
+        productTest = productVerification.toBuilder().id(null).build();
     }
 
     @Test
     public void givenNewProduct_whenPostProduct_thenCreated() throws Exception {
-        final ResultActions result = postResource(productPath, productWithoutId);
+        final ResultActions result = postResource(productPath, productTest);
         result.andExpect(status().isCreated());
         verifyJsonProductById(result);
     }
 
     @Test
-    public void givenNewOrder_whenPostOrderWithoutName_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, product.toBuilder().name(null).build());
+    public void givenNewProduct_whenPostProductWithId_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, productTest.toBuilder().id(productId).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenNewOrder_whenPostOrderWithtNegativeSuggestedPrice_thenBadRequest() throws Exception {
-        final ResultActions result = postResource(customerPath, product.toBuilder().suggestedPrice(BigDecimal.valueOf(-1.00)).build());
+    public void givenNewProduct_whenPostProductWithoutName_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, productTest.toBuilder().name(null).build());
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenNewProduct_whenPostProductWithtNegativeSuggestedPrice_thenBadRequest() throws Exception {
+        final ResultActions result = postResource(customerPath, productTest.toBuilder().suggestedPrice(BigDecimal.valueOf(-1.00)).build());
         result.andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenProductSaved_whenGetProduct_thenAssertionSucceeds() throws Exception {
-        postResource(productPath, productWithoutId);
+        postResource(productPath, productTest);
 
         final ResultActions result = getResource(productPath + "/" + productId);
         result.andExpect(status().isOk());
@@ -61,25 +67,25 @@ public class ProductIntegrationTest extends AbstractTest {
 
     @Test
     public void givenProductSaved_whenGetProductPaged_thenAssertionSucceeds() throws Exception {
-        postResource(productPath, productWithoutId);
+        postResource(productPath, productTest);
 
-        final ResultActions result = getResource(productPath + "?id=" + product.getId() + "&name=" + product.getName());
+        final ResultActions result = getResource(productPath + "?id=" + productVerification.getId() + "&name=" + productVerification.getName());
         result.andExpect(status().isOk());
         verifyJsonProductPaged(result);
     }
 
     @Test
     public void givenProductSaved_whenPutProduct_thenOk() throws Exception {
-        postResource(productPath, productWithoutId);
+        postResource(productPath, productTest);
 
-        final ResultActions result = putResource(productPath + "/" + productId, product);
+        final ResultActions result = putResource(productPath + "/" + productId, productVerification);
         result.andExpect(status().isOk());
         verifyJsonProductById(result);
     }
 
     @Test
     public void givenProductSaved_whenDeleteProduct_thenNoContent() throws Exception {
-        postResource(productPath, productWithoutId);
+        postResource(productPath, productTest);
 
         deleteResource(productPath, productId).andExpect(status().isNoContent()).andExpect(content().string(StringUtils.EMPTY));
     }
@@ -98,9 +104,9 @@ public class ProductIntegrationTest extends AbstractTest {
 
     private void verifyJsonProduct(final ResultActions result, String productPath) throws Exception {
         result
-                .andExpect(jsonPath(productPath + ".id", is(product.getId())))
-                .andExpect(jsonPath(productPath + ".name", is(product.getName())))
-                .andExpect(jsonPath(productPath + ".suggestedPrice", is(product.getSuggestedPrice().setScale(2, RoundingMode.HALF_UP).toString())))
-                .andExpect(jsonPath(productPath + ".productStatus", is(product.getProductStatus().toString())));
+                .andExpect(jsonPath(productPath + ".id", is(productVerification.getId())))
+                .andExpect(jsonPath(productPath + ".name", is(productVerification.getName())))
+                .andExpect(jsonPath(productPath + ".suggestedPrice", is(productVerification.getSuggestedPrice().setScale(2, RoundingMode.HALF_UP).toString())))
+                .andExpect(jsonPath(productPath + ".productStatus", is(productVerification.getProductStatus().toString())));
     }
 }
